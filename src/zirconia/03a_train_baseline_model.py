@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 from config import path_config
 from etl.material_data_processor import MaterialDataProcessor
 from features.preprocessor import build_feature_pipeline
-from datasets.conductivity_dataset import ConductivityDataset
+from custom_datasets.conductivity_dataset import ConductivityDataset
 from models.baseline_net import StandardDNN
 
 # --- 本地参数 ---

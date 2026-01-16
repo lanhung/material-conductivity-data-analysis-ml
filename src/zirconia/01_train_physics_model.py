@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 # --- 1. 模块化导入 ---
 from etl.material_data_processor import MaterialDataProcessor
 from features.preprocessor import build_feature_pipeline
-from datasets.conductivity_dataset import ConductivityDataset
+from custom_datasets.conductivity_dataset import ConductivityDataset
 from models.piml_net import PhysicsInformedNet
 
 
