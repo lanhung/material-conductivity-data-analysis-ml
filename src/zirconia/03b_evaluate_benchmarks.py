@@ -9,12 +9,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
+from sklearn.preprocessing import StandardScaler  # [新增] 用于 Baseline 温度标准化
 import warnings
 
+# 引入配置路径
 from config import path_config
 from etl.material_data_processor import MaterialDataProcessor
 from features.preprocessor import build_feature_pipeline
 from models.piml_net import PhysicsInformedNet
+# [新增] 导入 Baseline 模型定义
+from models.baseline_net import StandardDNN
 
 # 抑制警告
 warnings.filterwarnings('ignore')
@@ -219,49 +223,92 @@ def main():
     # 1. 准备数据
     train_df, test_df, X_train, X_test, y_train, y_test, pipeline = get_data_and_pipeline()
 
-    # 2. 运行基准测试
+    # -------------------------------------------------------------
+    # [新增] 准备 Baseline DNN 所需的标准化温度数据
+    # 必须完全复刻 03a_train_baseline_model.py 的逻辑：
+    # 即在 Train 上 fit，在 Test 上 transform
+    # -------------------------------------------------------------
+    print(">>> [Setup] Scaling temperature for Baseline DNN comparison...")
+    t_scaler = StandardScaler()
+    t_scaler.fit(train_df[['temperature_kelvin']].values)
+    T_test_scaled = t_scaler.transform(test_df[['temperature_kelvin']].values)
+    T_test_scaled_tensor = torch.FloatTensor(T_test_scaled).to(DEVICE)
+    # -------------------------------------------------------------
+
+    # 2. 运行传统 ML 基准测试 (RF & XGB)
     bench_results = run_benchmark(X_train, y_train, X_test, y_test)
 
-    # 3. 加载 PIML 模型
-    print(f"\n>>> [Setup] Loading PIML model from {path_config.BEST_PIML_MODEL_PATH}...")
+    # -------------------------------------------------------------
+    # [新增] 评估 Baseline DNN (Standard DNN)
+    # -------------------------------------------------------------
+    print("\n>>> [Benchmark] Evaluating Standard DNN (Baseline)...")
     input_dim = X_train.shape[1]
+    baseline_model = StandardDNN(input_dim).to(DEVICE)
+
+    # 检查模型是否存在
+    if os.path.exists(path_config.BASELINE_MODEL_PATH):
+        baseline_model.load_state_dict(torch.load(path_config.BASELINE_MODEL_PATH, map_location=DEVICE))
+        baseline_model.eval()
+
+        X_test_tensor = torch.FloatTensor(X_test).to(DEVICE)
+
+        with torch.no_grad():
+            # StandardDNN 的 forward 接受 (x, t_scaled)
+            baseline_preds = baseline_model(X_test_tensor, T_test_scaled_tensor)
+
+        baseline_rmse = np.sqrt(mean_squared_error(y_test, baseline_preds.cpu().numpy()))
+        baseline_r2 = r2_score(y_test, baseline_preds.cpu().numpy())
+
+        bench_results['Standard DNN'] = {'RMSE': baseline_rmse, 'R2': baseline_r2}
+    else:
+        print(f"Warning: Baseline model file not found at {path_config.BASELINE_MODEL_PATH}")
+        print("Please run '03a_train_baseline_model.py' first to generate the baseline.")
+        bench_results['Standard DNN'] = {'RMSE': np.nan, 'R2': np.nan}
+
+
+    # 3. 加载并评估 PIML 模型 (Ours)
+    print(f"\n>>> [Benchmark] Evaluating PIML Model (Ours)...")
     piml_model = PhysicsInformedNet(input_dim).to(DEVICE)
 
     if os.path.exists(path_config.BEST_PIML_MODEL_PATH):
         piml_model.load_state_dict(torch.load(path_config.BEST_PIML_MODEL_PATH, map_location=DEVICE))
+
+        # 4. 评估 PIML 模型 (与 Benchmark 对比)
+        piml_model.eval()
+        X_test_tensor = torch.FloatTensor(X_test).to(DEVICE)
+        T_test_tensor = torch.FloatTensor(test_df['temperature_kelvin'].values).view(-1, 1).to(DEVICE)
+
+        with torch.no_grad():
+            piml_preds, _, _ = piml_model(X_test_tensor, T_test_tensor)
+
+        piml_rmse = np.sqrt(mean_squared_error(y_test, piml_preds.cpu().numpy()))
+        piml_r2 = r2_score(y_test, piml_preds.cpu().numpy())
+
+        bench_results['PIML (Ours)'] = {'RMSE': piml_rmse, 'R2': piml_r2}
     else:
-        print(f"Error: Model file not found at {path_config.BEST_PIML_MODEL_PATH}")
+        print(f"Error: PIML Model file not found at {path_config.BEST_PIML_MODEL_PATH}")
         print("Please run '01_train_physics_model.py' first.")
-        return
-
-    # 4. 评估 PIML 模型 (与 Benchmark 对比)
-    piml_model.eval()
-    X_test_tensor = torch.FloatTensor(X_test).to(DEVICE)
-    T_test_tensor = torch.FloatTensor(test_df['temperature_kelvin'].values).view(-1, 1).to(DEVICE)
-
-    with torch.no_grad():
-        piml_preds, _, _ = piml_model(X_test_tensor, T_test_tensor)
-
-    piml_rmse = np.sqrt(mean_squared_error(y_test, piml_preds.cpu().numpy()))
-    piml_r2 = r2_score(y_test, piml_preds.cpu().numpy())
-
-    bench_results['PIML (Ours)'] = {'RMSE': piml_rmse, 'R2': piml_r2}
 
     # 打印最终对比结果
     print("\n========================================")
     print("      Model Comparison Results          ")
     print("========================================")
     df_results = pd.DataFrame(bench_results).T
-    print(df_results)
+    # 格式化输出，保留4位小数
+    print(df_results.applymap(lambda x: f"{x:.4f}"))
 
-    # 保存指标对比
+    # -------------------------------------------------------------
+    # [关键] 保存对比表格为 CSV (根据您的 Config 配置)
+    # -------------------------------------------------------------
     df_results.to_csv(path_config.FINAL_METRICS_COMPARISON_CSV)
+    print(f"\n>>> Metrics saved to {path_config.FINAL_METRICS_COMPARISON_CSV}")
 
-    # 5. 运行物理分析
-    analyze_physics(piml_model, X_test, test_df)
+    # 5. 运行物理分析 (仅针对 PIML)
+    if os.path.exists(path_config.BEST_PIML_MODEL_PATH):
+        analyze_physics(piml_model, X_test, test_df)
 
-    # 6. 运行虚拟筛选
-    virtual_screening(piml_model, pipeline, train_df)
+        # 6. 运行虚拟筛选 (仅针对 PIML)
+        virtual_screening(piml_model, pipeline, train_df)
 
 if __name__ == "__main__":
     main()
