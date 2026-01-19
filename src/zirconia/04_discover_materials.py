@@ -15,9 +15,7 @@ from etl.material_data_processor import MaterialDataProcessor
 from features.preprocessor import build_feature_pipeline
 from models.piml_net import PhysicsInformedNet
 
-# =========================================================
-# [Update] 从 algorithm 文件夹导入 CoDopingGA
-# =========================================================
+# 导入 GA 模块
 from algorithm.co_doping_ga import CoDopingGA
 
 # 抑制警告
@@ -126,6 +124,27 @@ if __name__ == "__main__":
     print("Interpretation: The model suggests that mixing these two dopants")
     print("creates an average cationic radius that minimizes activation energy")
     print("more effectively than single dopants (Entropy Stabilization Effect).")
+
+    # -------------------------------------------------------------
+    # [新增] 将最佳结果保存为 CSV
+    # -------------------------------------------------------------
+    result_record = {
+        'system': f"ZrO2-{d1}-{d2}",
+        'dopant_1_element': d1,
+        'dopant_1_fraction': f1,
+        'dopant_2_element': d2,
+        'dopant_2_fraction': f2,
+        'total_dopant_fraction': total_f,
+        'effective_cation_radius_pm': avg_r,
+        'sintering_temperature_c': t,
+        'predicted_log_conductivity': best_score,
+        'predicted_conductivity_S_cm': 10 ** best_score,
+        'target_temperature_c': 800
+    }
+
+    df_result = pd.DataFrame([result_record])
+    df_result.to_csv(path_config.AI_DISCOVERY_RESULTS_CSV, index=False)
+    print(f"\n>>> [Export] Best recipe saved to '{path_config.AI_DISCOVERY_RESULTS_CSV}'")
 
     # 4. Save Trajectory
     plt.figure(figsize=(6, 4))

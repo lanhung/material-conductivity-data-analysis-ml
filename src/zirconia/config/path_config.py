@@ -24,6 +24,7 @@ FINAL_METRICS_COMPARISON_CSV=os.path.join(RESULTS_DIR,"final_metrics_comparison.
 #04_discover_materials.py
 PAPER_STRAIN_THEORY_VERIFICATION_IMAGE_PATH=os.path.join(IMAGE_DIR,"paper_strain_theory_verification.png")
 PAPER_INVERSE_DESIGN_GA_IMAGE_PATH=os.path.join(IMAGE_DIR,"paper_inverse_design_ga.png")
+AI_DISCOVERY_RESULTS_CSV=os.path.join(RESULTS_DIR,"ai_discovery_best_recipe.csv")
 #05_simulate_lab_experiments.py
 UQ_CALIBRATION_IMAGE_PATH = os.path.join(IMAGE_DIR,"paper_uq_calibration.png")
 ACTIVE_LEARNING_IMAGE_PATH = os.path.join(IMAGE_DIR,"paper_active_learning.png")
