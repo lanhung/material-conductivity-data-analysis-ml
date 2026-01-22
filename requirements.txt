@@ -17,4 +17,6 @@ jupyter
 jupyterlab
 seaborn
 duckdb
+chgnet
+ase
 
