@@ -35,7 +35,7 @@ except ImportError:
 
 # --- 配置参数 ---
 AI_RESULTS_CSV = path_config.AI_DISCOVERY_RESULTS_CSV
-VALIDATION_PLOT_PATH = os.path.join(path_config.IMAGE_DIR, "paper_computational_validation.png")
+VALIDATION_PLOT_PATH = os.path.join(path_config.PAPER_COMPUTATIONAL_VALIDATION_IMAGE_PATH)
 
 # [关键修改] 提升温度以加速扩散 (1500K 相当于高温加速老化测试)
 MD_TEMP_K = 1500

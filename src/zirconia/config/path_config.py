@@ -6,7 +6,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 RESULTS_DIR=PROJECT_ROOT / "results"
 IMAGE_DIR = RESULTS_DIR / "images"
 MODEL_DIR = RESULTS_DIR / "checkpoint"
-
+DATA_DIR = PROJECT_ROOT / "data"
 ## 01_train_physics_model.py
 BEST_PIML_MODEL_PATH=os.path.join(MODEL_DIR,"piml","best_piml_model.pth")
 PIML_PREDICTION_EA_DISTANCE_IMAGE_PATH=os.path.join(IMAGE_DIR,"piml_prediction_and_ea_dist.png")
@@ -28,3 +28,12 @@ AI_DISCOVERY_RESULTS_CSV=os.path.join(RESULTS_DIR,"ai_discovery_best_recipe.csv"
 #05_simulate_lab_experiments.py
 UQ_CALIBRATION_IMAGE_PATH = os.path.join(IMAGE_DIR,"paper_uq_calibration.png")
 ACTIVE_LEARNING_IMAGE_PATH = os.path.join(IMAGE_DIR,"paper_active_learning.png")
+# 06_verify_stability.py
+VALIDATION_STABILITY_MAP_IMAGE_PATH = os.path.join(IMAGE_DIR, "validation_stability_map.png")
+# 07_computational_validation.py
+PAPER_COMPUTATIONAL_VALIDATION_IMAGE_PATH = os.path.join(IMAGE_DIR, "paper_computational_validation.png")
+# 08_verify_stability_dft.py
+PAPER_DFT_FORMATION_ENERGY_IMAGE_PATH = os.path.join(IMAGE_DIR, "paper_dft_formation_energy.png")
+PSEUDO_DIR= os.path.join(DATA_DIR,"pseudo")
+
+

@@ -131,7 +131,7 @@ def plot_stability_map(r_avg, mismatch, is_stable):
     plt.legend(loc='upper right')
     plt.grid(True, alpha=0.3)
 
-    save_path = os.path.join(path_config.IMAGE_DIR, "validation_stability_map.png")
+    save_path = os.path.join(path_config.VALIDATION_STABILITY_MAP_IMAGE_PATH)
     plt.savefig(save_path)
     print(f"\n>>> [Visual] Stability map saved to {save_path}")
 

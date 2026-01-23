@@ -18,14 +18,14 @@ except ImportError:
 
 # --- 配置区域 ---
 QE_COMMAND = "pw.x"
-PSEUDO_DIR = "/home/zxc/projects/2/data-analysis-ml/data/pseudo"
+#PSEUDO_DIR = "/home/zxc/projects/2/data-analysis-ml/data/pseudo"
 RESULTS_DIR = path_config.RESULTS_DIR
 DFT_WORK_DIR = os.path.join(RESULTS_DIR, "dft_qe_workdir")
-DFT_IMAGE_PATH = os.path.join(path_config.IMAGE_DIR, "paper_dft_formation_energy.png")
+DFT_IMAGE_PATH = os.path.join(path_config.PAPER_DFT_FORMATION_ENERGY_IMAGE_PATH)
 
 # 确保目录存在
 os.makedirs(DFT_WORK_DIR, exist_ok=True)
-os.makedirs(PSEUDO_DIR, exist_ok=True)
+os.makedirs(path_config.PSEUDO_DIR, exist_ok=True)
 
 class DFTValidator:
     def __init__(self):
@@ -86,7 +86,7 @@ class DFTValidator:
         unique_elements = sorted([e.symbol for e in structure.composition.elements])
 
         with open(filename, 'w') as f:
-            f.write(f"&CONTROL\n  calculation='vc-relax', prefix='{label}', outdir='./tmp/', pseudo_dir='{PSEUDO_DIR}'\n/\n")
+            f.write(f"&CONTROL\n  calculation='vc-relax', prefix='{label}', outdir='./tmp/', pseudo_dir='{path_config.PSEUDO_DIR}'\n/\n")
             f.write(f"&SYSTEM\n  ibrav=0, nat={len(structure)}, ntyp={len(unique_elements)}, ecutwfc=50.0, ecutrho=400.0,\n")
             f.write(f"  occupations='smearing', smearing='gaussian', degauss=0.01\n/\n")
             f.write(f"&ELECTRONS\n  conv_thr=1.0d-6, mixing_beta=0.7\n/\n")
