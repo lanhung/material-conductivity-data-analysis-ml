@@ -17,7 +17,7 @@
 - **重要性**: 整个项目的基石，后续所有分析和发现模块都依赖此模型。
 
 ### Step 2: 深度分析与全量模型 (Deep Analysis)
-- **运行文件**: `02_interpret_mechanisms.py`
+- **运行文件**: `02_interpret_mechanisms.py` `inspect_text_svd.py`
 - **作用**: 进行特征重要性分析、t-SNE 降维可视化，并使用全量数据微调模型。
 - **输出**: 保存用于解释性的图表和 `piml_full_model.pth`。
 
