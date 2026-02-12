@@ -13,7 +13,9 @@ IONIC_RADII = {
     'Ce': 97.0, 'Ti': 74.0, 'Al': 54.0
 }
 
-# [基准线] 8 mol% YSZ 的理论参数 (工业标准)
+# [基准线] 8 at% Y (阳离子位) 的理论参数
+# 注意: 此处 Zr(0.92)+Y(0.08) 是指阳离子位上 Y 占 8%，
+#       并非材料领域常说的 "8 mol% Y2O3-ZrO2"(后者 Y 阳离子占比约 14.8%)
 # Zr(0.92) + Y(0.08)
 YSZ_8_RADIUS = 0.92 * 84.0 + 0.08 * 101.9 # ~ 85.43 pm
 YSZ_8_RATIO  = YSZ_8_RADIUS / 138.0       # ~ 0.619
@@ -100,7 +102,10 @@ def generate_dft_input(candidate, r_avg):
     filename = os.path.join(path_config.RESULTS_DIR, "POSCAR_AI_Discovery.vasp")
 
     with open(filename, 'w') as f:
-        f.write(f"System {candidate['dopants']}\n1.0\n")
+        f.write(f"System {candidate['dopants']}\n")
+        f.write("! WARNING: This is a POSCAR stub. Missing element counts and full atomic coordinates.\n")
+        f.write("! Use pymatgen/VESTA/SQS to build a complete supercell before running DFT.\n")
+        f.write(f"1.0\n")
         f.write(f"  {est_lattice_constant:.5f} 0.00 0.00\n  0.00 {est_lattice_constant:.5f} 0.00\n  0.00 0.00 {est_lattice_constant:.5f}\n")
         f.write(f"  Zr O {' '.join([d[0] for d in candidate['dopants']])}\n")
         f.write("  Direct\n  0.00 0.00 0.00\n")
