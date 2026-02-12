@@ -1,0 +1,27 @@
+>>> [Data Processor] Executing SQL Extraction and Transformation...
+>>> [Data Processor] Data loaded successfully. Shape: (1351, 14)
+>>> Fitting feature pipeline...
+>>> Scaling temperature for DNN baseline...
+>>> Starting Baseline Training on cuda...
+Epoch 0/300 | Train: 2.4821 | Val: 1.1003
+Epoch 20/300 | Train: 0.1279 | Val: 0.1358
+Epoch 40/300 | Train: 0.0953 | Val: 0.1008
+Epoch 60/300 | Train: 0.0756 | Val: 0.0894
+Epoch 80/300 | Train: 0.0742 | Val: 0.0791
+Epoch 100/300 | Train: 0.0641 | Val: 0.0766
+Epoch 120/300 | Train: 0.0604 | Val: 0.0686
+Epoch 140/300 | Train: 0.0619 | Val: 0.0725
+Epoch 160/300 | Train: 0.0560 | Val: 0.0710
+Epoch 180/300 | Train: 0.0521 | Val: 0.0673
+Epoch 200/300 | Train: 0.0534 | Val: 0.0673
+Epoch 220/300 | Train: 0.0533 | Val: 0.0697
+Epoch 240/300 | Train: 0.0506 | Val: 0.0681
+Epoch 260/300 | Train: 0.0493 | Val: 0.0683
+Epoch 280/300 | Train: 0.0464 | Val: 0.0669
+>>> Best baseline model saved to: /home/zxc/workspace/code/data-analysis-ml/results/checkpoint/baseline/best_baseline_dnn.pth
+
+>>> Baseline DNN Final Results:
+    RMSE: 0.2518
+    R2 Score: 0.9360
+>>> Result plot saved to /home/zxc/workspace/code/data-analysis-ml/results/images/baseline_dnn_prediction_vs_actual.png
+>>> Prediction CSV saved to /home/zxc/workspace/code/data-analysis-ml/results/comparison_baseline_dnn.csv

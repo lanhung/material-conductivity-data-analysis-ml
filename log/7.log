@@ -1,0 +1,24 @@
+>>> [Step 7] Computational Validation (T=1500K, Steps=5000)
+    Target: /home/zxc/workspace/code/data-analysis-ml/results/images/paper_computational_validation.png
+🚀 加载 CHGNet (GPU Mode)...
+CHGNet v0.3.0 initialized with 412,525 parameters
+CHGNet will run on cuda
+
+   -> Validating: AI_Best (Sc=0.07, Mg=0.03)
+CHGNet will run on cuda
+      Result: PIML=-1.04 | MD=-0.05
+
+   -> Validating: AI_Top2 (Y=0.08, Gd=0.02)
+CHGNet will run on cuda
+      Result: PIML=-1.35 | MD=-0.24
+
+   -> Validating: Pure_ZrO2 (Zr=0.00, Zr=0.00)
+CHGNet will run on cuda
+      [Warning] Low diffusion detected (Slope=-2.41e-02). Returning floor value.
+      Result: PIML=-3.50 | MD=-6.00
+
+   -> Validating: Poor_Mg (Mg=0.05, Mg=0.00)
+CHGNet will run on cuda
+      Result: PIML=-2.10 | MD=-0.27
+
+验证图表已生成: /home/zxc/workspace/code/data-analysis-ml/results/images/paper_computational_validation.png

@@ -1,0 +1,30 @@
+>>> [Setup] Loading and fitting pipeline...
+>>> [Data Processor] Executing SQL Extraction and Transformation...
+>>> [Data Processor] Data loaded successfully. Shape: (1351, 14)
+
+>>> [Inverse Design] Starting Co-Doping Evolution (Target: 800°C)...
+    (Using Optimized Batch Processing)
+    Gen 0: Best = -1.228 | Sc(61.0%) + Mg(39.0%) | Total: 12.7%
+    Gen 5: Best = -1.058 | Sc(70.2%) + Mg(29.8%) | Total: 10.8%
+    Gen 10: Best = -1.058 | Sc(70.2%) + Mg(29.8%) | Total: 10.8%
+    Gen 15: Best = -1.058 | Sc(70.2%) + Mg(29.8%) | Total: 10.8%
+    Gen 20: Best = -1.058 | Sc(70.2%) + Mg(29.8%) | Total: 10.8%
+
+==============================================
+      AI-Discovery: Novel Material Recipe
+==============================================
+System:           ZrO2 - Sc2O3 - Mg2O3 (Ternary Co-Doping)
+Composition:      Sc: 7.5 mol%  |  Mg: 3.2 mol%
+Total Doping:     10.7 mol%
+Effective Radius: 87.60 pm (Fine-tuned Lattice Match)
+Sintering Temp:   1505 °C
+Predicted Cond:   10^-1.04 S/cm (at 800°C)
+==============================================
+Interpretation: The model suggests that mixing these two dopants
+creates an average cationic radius that minimizes activation energy
+more effectively than single dopants (Entropy Stabilization Effect).
+
+>>> [Export] Best recipe saved to '/home/zxc/workspace/code/data-analysis-ml/results/ai_discovery_best_recipe.csv'
+
+>>> [Theory Check] Verifying Elastic Strain Theory...
+    -> Saved theory plot to /home/zxc/workspace/code/data-analysis-ml/results/images/paper_strain_theory_verification.png

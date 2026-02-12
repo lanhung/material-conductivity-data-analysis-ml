@@ -1,0 +1,37 @@
+>>> [Setup] Output directories ensure created at: /home/zxc/workspace/code/data-analysis-ml/results
+>>> [Data Processor] Executing SQL Extraction and Transformation...
+>>> [Data Processor] Data loaded successfully. Shape: (1351, 14)
+>>> Starting Training...
+Epoch 0/300 | Val Loss: 3.0193
+Epoch 10/300 | Val Loss: 0.4678
+Epoch 20/300 | Val Loss: 0.2215
+Epoch 30/300 | Val Loss: 0.1451
+Epoch 40/300 | Val Loss: 0.1318
+Epoch 50/300 | Val Loss: 0.1019
+Epoch 60/300 | Val Loss: 0.0740
+Epoch 70/300 | Val Loss: 0.0892
+Epoch 80/300 | Val Loss: 0.1250
+Epoch 90/300 | Val Loss: 0.0899
+Epoch 100/300 | Val Loss: 0.0918
+Epoch 110/300 | Val Loss: 0.0814
+Epoch 120/300 | Val Loss: 0.0836
+Epoch 130/300 | Val Loss: 0.0782
+Epoch 140/300 | Val Loss: 0.1016
+Epoch 150/300 | Val Loss: 0.0719
+Epoch 160/300 | Val Loss: 0.0699
+Epoch 170/300 | Val Loss: 0.0835
+Epoch 180/300 | Val Loss: 0.0735
+Epoch 190/300 | Val Loss: 0.0679
+Epoch 200/300 | Val Loss: 0.0959
+Epoch 210/300 | Val Loss: 0.0902
+Epoch 220/300 | Val Loss: 0.0736
+Epoch 230/300 | Val Loss: 0.0877
+Epoch 240/300 | Val Loss: 0.0881
+Epoch 250/300 | Val Loss: 0.0659
+Epoch 260/300 | Val Loss: 0.0709
+Epoch 270/300 | Val Loss: 0.0801
+Epoch 280/300 | Val Loss: 0.0783
+Epoch 290/300 | Val Loss: 0.0854
+>>> Best model saved to: /home/zxc/workspace/code/data-analysis-ml/results/checkpoint/piml/best_piml_model.pth
+>>> Results image saved to: /home/zxc/workspace/code/data-analysis-ml/results/images/piml_prediction_and_ea_dist.png
+Final RMSE: 0.2532

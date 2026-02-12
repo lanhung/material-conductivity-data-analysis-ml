@@ -1,0 +1,38 @@
+>>> [Setup] Loading data via MaterialDataProcessor...
+>>> [Data Processor] Executing SQL Extraction and Transformation...
+>>> [Data Processor] Data loaded successfully. Shape: (1351, 14)
+>>> [Setup] Fitting feature pipeline...
+>>> [Setup] Scaling temperature for Baseline DNN comparison...
+
+>>> [Module 1] Running Benchmarks (RF & XGBoost)...
+
+>>> [Benchmark] Evaluating Standard DNN (Baseline)...
+
+>>> [Benchmark] Evaluating PIML Model (Ours)...
+
+========================================
+      Model Comparison Results
+========================================
+                 RMSE      R2
+Random Forest  0.7222  0.4740
+XGBoost        0.7179  0.4803
+Standard DNN   0.2518  0.9360
+PIML (Ours)    0.2532  0.9353
+
+>>> Metrics saved to /home/zxc/workspace/code/data-analysis-ml/results/final_metrics_comparison.csv
+
+>>> [Module 2] Analyzing Physics Consistency...
+   -> Saved physics analysis plots to '/home/zxc/workspace/code/data-analysis-ml/results/images/Ea_vs_structure_and_doping.png'
+
+>>> [Module 3] Running Virtual Screening for New Materials...
+
+>>> Top 5 Predicted Candidates (at 800°C):
+           sample_id primary_dopant_element  ...   pred_Ea  pred_sigma
+756  Virtual_Sc_0.16                     Sc  ...  0.992550    0.059781
+756  Virtual_Sc_0.14                     Sc  ...  0.992404    0.059587
+756  Virtual_Sc_0.12                     Sc  ...  0.992258    0.059393
+756  Virtual_Sc_0.10                     Sc  ...  0.992112    0.059200
+756  Virtual_Sc_0.08                     Sc  ...  0.992013    0.059026
+
+[5 rows x 5 columns]
+   -> Saved screening results to '/home/zxc/workspace/code/data-analysis-ml/results/virtual_screening_results.csv'

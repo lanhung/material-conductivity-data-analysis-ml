@@ -1,0 +1,14 @@
+>>> [Setup] Loading best recipe from: /home/zxc/workspace/code/data-analysis-ml/results/ai_discovery_best_recipe.csv
+    Loaded System: [('Sc', 0.0749611971855083), ('Mg', 0.0318872894402578)]
+
+>>> [Validation] Checking Thermodynamic Stability...
+    (Baseline Reference: 8YSZ Radius=85.43 pm, Ratio=0.6191)
+    Average Cation Radius: 84.38 pm
+    Radius Mismatch (DR):  1.1507 pm
+    Cation/Anion Ratio:    0.6115
+    Phase Prediction:      METASTABLE (Tetragonal/Cubic Mixed - High Conductivity)
+
+>>> [Handoff] Generating DFT Input Structure (POSCAR stub)...
+    -> Generated structural file: /home/zxc/workspace/code/data-analysis-ml/results/POSCAR_AI_Discovery.vasp
+
+>>> [Visual] Stability map saved to /home/zxc/workspace/code/data-analysis-ml/results/images/validation_stability_map.png
