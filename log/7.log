@@ -1,24 +1,95 @@
->>> [Step 7] Computational Validation (T=1500K, Steps=5000)
-    Target: /home/zxc/workspace/code/data-analysis-ml/results/images/paper_computational_validation.png
+>>> [Step 7] Computational Validation (T=1073.2K, dt=2.0fs, equil=10000, prod=200000, repeats=3, supercell=3x3x3)
+    Target: /home/zxc/workspace/projects/material-conductivity-data-analysis-ml/results/images/paper_computational_validation.png
+    Random Seed (base): 42 (env: MD_SEED)
 🚀 加载 CHGNet (GPU Mode)...
 CHGNet v0.3.0 initialized with 412,525 parameters
 CHGNet will run on cuda
 
    -> Validating: AI_Best (Sc=0.07, Mg=0.03)
+      RNG Seed (rep 1): 3410830334
+      Supercell: 3x3x3 -> 324 atoms
 CHGNet will run on cuda
-      Result: PIML=-1.04 | MD=-0.05
+      COM drift: 0.0950 Å (total over trajectory)
+      MSD slope: 1.8221e-02 Å²/ps
+        Rep 1: PIML=-1.04 | MD=-0.92 (σ=1.214e-01 S/cm)
+      RNG Seed (rep 2): 665859440
+      Supercell: 3x3x3 -> 324 atoms
+CHGNet will run on cuda
+      COM drift: 0.2516 Å (total over trajectory)
+      MSD slope: 1.6217e-02 Å²/ps
+        Rep 2: PIML=-1.04 | MD=-0.97 (σ=1.080e-01 S/cm)
+      RNG Seed (rep 3): 2858909036
+      Supercell: 3x3x3 -> 324 atoms
+CHGNet will run on cuda
+      COM drift: 0.1573 Å (total over trajectory)
+      MSD slope: 1.0965e-02 Å²/ps
+        Rep 3: PIML=-1.04 | MD=-1.14 (σ=7.304e-02 S/cm)
+      Result: PIML=-1.04 | MD=-1.01 ± 0.12 (log10 σ)
 
    -> Validating: AI_Top2 (Y=0.08, Gd=0.02)
+      RNG Seed (rep 1): 892588324
+      Supercell: 3x3x3 -> 324 atoms
 CHGNet will run on cuda
-      Result: PIML=-1.35 | MD=-0.24
+      COM drift: 0.2072 Å (total over trajectory)
+      MSD slope: 1.6091e-02 Å²/ps
+        Rep 1: PIML=-1.35 | MD=-0.97 (σ=1.077e-01 S/cm)
+      RNG Seed (rep 2): 1186505723
+      Supercell: 3x3x3 -> 324 atoms
+CHGNet will run on cuda
+      COM drift: 0.1502 Å (total over trajectory)
+      MSD slope: 5.9698e-03 Å²/ps
+        Rep 2: PIML=-1.35 | MD=-1.40 (σ=3.996e-02 S/cm)
+      RNG Seed (rep 3): 3172835804
+      Supercell: 3x3x3 -> 324 atoms
+CHGNet will run on cuda
+      COM drift: 0.0995 Å (total over trajectory)
+      MSD slope: 1.0871e-02 Å²/ps
+        Rep 3: PIML=-1.35 | MD=-1.14 (σ=7.276e-02 S/cm)
+      Result: PIML=-1.35 | MD=-1.17 ± 0.22 (log10 σ)
 
    -> Validating: Pure_ZrO2 (Zr=0.00, Zr=0.00)
+      RNG Seed (rep 1): 1244780310
+      Supercell: 3x3x3 -> 324 atoms
 CHGNet will run on cuda
-      [Warning] Low diffusion detected (Slope=-2.41e-02). Returning floor value.
-      Result: PIML=-3.50 | MD=-6.00
+      COM drift: 0.0432 Å (total over trajectory)
+      MSD slope: 9.0805e-05 Å²/ps
+        Rep 1: PIML=-3.50 | MD=-3.20 (σ=6.251e-04 S/cm)
+      RNG Seed (rep 2): 3540254088
+      Supercell: 3x3x3 -> 324 atoms
+CHGNet will run on cuda
+      COM drift: 0.0447 Å (total over trajectory)
+      MSD slope: 3.9103e-04 Å²/ps
+        Rep 2: PIML=-3.50 | MD=-2.57 (σ=2.692e-03 S/cm)
+      RNG Seed (rep 3): 3417680489
+      Supercell: 3x3x3 -> 324 atoms
+CHGNet will run on cuda
+      COM drift: 0.0315 Å (total over trajectory)
+      MSD slope: -3.3612e-04 Å²/ps
+      [Warning] Diffusivity below detection limit (Slope=-3.36e-04). Returning floor.
+        Rep 3: PIML=-3.50 | MD=-6.00 (σ=1.000e-06 S/cm)
+      Result: PIML=-3.50 | MD=-3.92 ± 1.83 (log10 σ)
 
    -> Validating: Poor_Mg (Mg=0.05, Mg=0.00)
+      RNG Seed (rep 1): 1726156167
+      Supercell: 3x3x3 -> 324 atoms
 CHGNet will run on cuda
-      Result: PIML=-2.10 | MD=-0.27
+      COM drift: 0.1123 Å (total over trajectory)
+      MSD slope: 4.0341e-03 Å²/ps
+        Rep 1: PIML=-2.10 | MD=-1.57 (σ=2.713e-02 S/cm)
+      RNG Seed (rep 2): 2662572641
+      Supercell: 3x3x3 -> 324 atoms
+CHGNet will run on cuda
+      COM drift: 0.2103 Å (total over trajectory)
+      MSD slope: 8.2690e-03 Å²/ps
+        Rep 2: PIML=-2.10 | MD=-1.25 (σ=5.561e-02 S/cm)
+      RNG Seed (rep 3): 2051639392
+      Supercell: 3x3x3 -> 324 atoms
+CHGNet will run on cuda
+      COM drift: 0.0493 Å (total over trajectory)
+      MSD slope: 6.3622e-03 Å²/ps
+        Rep 3: PIML=-2.10 | MD=-1.37 (σ=4.279e-02 S/cm)
+      Result: PIML=-2.10 | MD=-1.40 ± 0.16 (log10 σ)
 
-验证图表已生成: /home/zxc/workspace/code/data-analysis-ml/results/images/paper_computational_validation.png
+✅ 验证图表已生成: /home/zxc/workspace/projects/material-conductivity-data-analysis-ml/results/images/paper_computational_validation.png
+
+Process finished with exit code 0
