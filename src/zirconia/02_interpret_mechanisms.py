@@ -200,21 +200,36 @@ def run_experiments():
     preds_sc = preds_sc.cpu().numpy().flatten()
     rmse = np.sqrt(np.mean((preds_sc - y_te)**2))
 
+    # 朴素基线：用训练集均值预测所有测试样本
+    naive_pred = np.full_like(y_te, y_tr.mean())
+    naive_rmse = np.sqrt(np.mean((naive_pred - y_te)**2))
+
+    # R² 分数
+    ss_res = np.sum((preds_sc - y_te)**2)
+    ss_tot = np.sum((y_te - y_te.mean())**2)
+    r2 = 1 - ss_res / ss_tot
+
     plt.figure(figsize=(6, 6))
     plt.scatter(y_te, preds_sc, color='purple', alpha=0.6, label=f'Test Samples ({target_element})')
     # 绘制完美预测线
     min_val = min(y_te.min(), preds_sc.min())
     max_val = max(y_te.max(), preds_sc.max())
     plt.plot([min_val, max_val], [min_val, max_val], 'k--', label='Perfect Prediction')
+    # 绘制朴素基线（训练集均值）
+    plt.axhline(y=y_tr.mean(), color='gray', linestyle=':', alpha=0.8, label=f'Naive Baseline (train mean={y_tr.mean():.2f})')
 
-    plt.title(f"Generalization to Unseen Element ({target_element})\nRMSE: {rmse:.3f}")
+    plt.title(
+        f"Generalization to Unseen Element ({target_element})\n"
+        f"RMSE: {rmse:.3f}  |  Naive RMSE: {naive_rmse:.3f}  |  R²: {r2:.3f}"
+    )
     plt.xlabel("Actual log(sigma)")
     plt.ylabel("Predicted log(sigma)")
     plt.legend()
 
     save_path_3 = path_config.IMAGE_DIR / f"paper_lodo_{target_element}.png"
     plt.savefig(save_path_3)
-    print(f"   -> Saved '{save_path_3}'. RMSE on {target_element}: {rmse:.4f}")
+    print(f"   -> Saved '{save_path_3}'.")
+    print(f"      RMSE={rmse:.4f}  |  Naive RMSE={naive_rmse:.4f}  |  R²={r2:.4f}")
 
 if __name__ == "__main__":
     run_experiments()
