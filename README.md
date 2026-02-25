@@ -2,7 +2,7 @@
 
 ## 1. 数据准备
 数据清洗部分： https://github.com/lanhung/material-conductivity-data-clean  
-先运行 `data_loader.py` 来全量同步 MySQL 中的数据。（这部分数据意义上到data文件夹下了，文件zirconia_snapshot.duckdb）
+先运行 `data_loader.py` 来全量同步 MySQL 中的数据。（这部分数据已经放到data文件夹下了，文件zirconia_snapshot.duckdb）
 
 ## 2. 核心执行步骤
 
