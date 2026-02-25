@@ -1,9 +1,10 @@
+Remainder of file ignored
 >>> [Step 8] DFT Stability Verification...
-    Work Dir: /home/zxc/workspace/code/data-analysis-ml/results/dft_qe_workdir
+    Work Dir: /home/zxc/workspace/projects/material-conductivity-data-analysis-ml/results/dft_qe_workdir
    -> Processing: AI_Best...
-      Formation Energy: -0.116 eV/atom
+      Formation Energy: -0.155 eV/atom
    -> Processing: Baseline_Pure...
       Formation Energy: 0.000 eV/atom
    -> Processing: Unstable_Case...
-      Formation Energy: 0.163 eV/atom
-✅ DFT Results saved to: /home/zxc/workspace/code/data-analysis-ml/results/images/paper_dft_formation_energy.png
+      Formation Energy: 0.132 eV/atom
+✅ DFT Results saved to: /home/zxc/workspace/projects/material-conductivity-data-analysis-ml/results/images/paper_dft_formation_energy.png

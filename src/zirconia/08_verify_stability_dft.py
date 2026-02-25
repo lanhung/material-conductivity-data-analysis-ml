@@ -54,8 +54,18 @@ class DFTValidator:
             structure.replace(idx, element)
 
         # 3. 电荷平衡 (氧空位)
-        total_trivalent = n_d1 + n_d2
-        n_vacancies = int(total_trivalent / 2)
+        # 价态表 (Zr=+4 reference)，与 Step 7 保持一致
+        valences = {
+            "Sc": 3, "Y": 3, "Gd": 3, "Yb": 3,  # +3 Trivalent
+            "Mg": 2, "Ca": 2,                     # +2 Divalent
+            "Zr": 4
+        }
+        v1 = valences.get(d1, 3)  # 默认为 +3
+        v2 = valences.get(d2, 3)  # 默认为 +3
+        # 电荷补偿公式: 每个氧空位补偿 +2 电荷缺陷
+        # Deficit = Sum( N_dopant * (4 - Valence) )
+        charge_deficit = n_d1 * (4 - v1) + n_d2 * (4 - v2)
+        n_vacancies = int(round(charge_deficit / 2.0))
 
         if n_vacancies > 0:
             o_sites = [i for i, s in enumerate(structure) if s.specie.symbol == "O"]
