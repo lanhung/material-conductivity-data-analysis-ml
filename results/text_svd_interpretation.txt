@@ -1,0 +1,65 @@
+=== Interpretation of Text SVD Components (Topic Analysis) ===
+Each component represents a latent theme in the material descriptions.
+
+[text_svd_0]
+  (+) Associated with: 99(0.37), used(0.26), materials(0.26), 200(0.24), nm(0.24), y2o3(0.22), oxide(0.21), supplied(0.20)
+
+[text_svd_1]
+  (+) Associated with: 99(0.41), supplied(0.21), no3(0.21), aladdin(0.18), shanghai(0.18), adamas(0.16), wt(0.13), 25(0.13)
+  (-) Associated with: 200(-0.26), nm(-0.26), oxide(-0.24), materials(-0.20), used(-0.19), zirconia(-0.16), y2o3(-0.15), sc2o3(-0.14)
+
+[text_svd_2]
+  (+) Associated with: y2o3(0.42), sc2o3(0.36), zro2(0.34), materials(0.23), used(0.19), starting(0.16), zrocl2(0.10)
+  (-) Associated with: oxide(-0.40), zirconia(-0.24), 200(-0.22), nm(-0.21), scandium(-0.19), ytterbium(-0.12), mixture(-0.09), particle(-0.09)
+
+[text_svd_3]
+  (+) Associated with: 110(0.32), tpo(0.32), tmpta(0.32), hdda(0.32), eda(0.32), byk(0.32), zirconia(0.11), materials(0.11)
+  (-) Associated with: powder(-0.31), oxide(-0.23), particle(-0.21), size(-0.21), scandium(-0.11), purity(-0.10), zro2(-0.08), supplied(-0.08)
+
+[text_svd_4]
+  (+) Associated with: powder(0.46), particle(0.22), size(0.22), purity(0.20), supplied(0.17), commercial(0.16), tpo(0.14), tmpta(0.14)
+  (-) Associated with: oxide(-0.39), scandium(-0.19), materials(-0.19), starting(-0.18), zrocl2(-0.16), ytterbium(-0.12), no3(-0.11), used(-0.11)
+
+[text_svd_5]
+  (+) Associated with: oxide(0.35), purity(0.26), supplied(0.25), commercial(0.22), material(0.20), scandium(0.19), japan(0.13), china(0.13)
+  (-) Associated with: particle(-0.24), size(-0.24), no3(-0.19), 200(-0.19), nm(-0.18), 6h2o(-0.17), scandia(-0.16), yttria(-0.13)
+
+[text_svd_6]
+  (+) Associated with: scandia(0.35), powders(0.32), ceria(0.28), 200(0.25), nm(0.25), yttria(0.21), purity(0.10), china(0.10)
+  (-) Associated with: size(-0.30), particle(-0.30), powder(-0.26), oxide(-0.16), 6h2o(-0.15), no3(-0.15), byk(-0.11), tpo(-0.11)
+
+[text_svd_7]
+  (+) Associated with: starting(0.38), commercial(0.27), 6h2o(0.27), zrocl2(0.23), no3(0.22), japan(0.21), material(0.19), tokyo(0.17)
+  (-) Associated with: sc2o3(-0.32), zro2(-0.27), 99(-0.13), shanghai(-0.09), aladdin(-0.09), oxide(-0.08), adamas(-0.07), 25(-0.06)
+
+[text_svd_8]
+  (+) Associated with: 6h2o(0.44), no3(0.43), sc2o3(0.28), zr(0.24), zro2(0.22), ce(0.19), sc(0.09), material(0.09)
+  (-) Associated with: zrocl2(-0.41), starting(-0.32), 99(-0.08), used(-0.08), gd2o3(-0.08), particle(-0.08), size(-0.08), powder(-0.08)
+
+[text_svd_9]
+  (+) Associated with: purity(0.40), china(0.31), yb2o3(0.18), geoquin(0.15), rare(0.15), earth(0.15), nano(0.15), farmeiya(0.15)
+  (-) Associated with: commercial(-0.30), japan(-0.29), tokyo(-0.24), tosoh(-0.18), 8ysz(-0.15), sc2o3(-0.15), corporation(-0.12), ysz(-0.11)
+
+[text_svd_10]
+  (+) Associated with: ceria(0.27), powder(0.25), scandia(0.25), purity(0.21), 99(0.17), method(0.12), alfa(0.12), aesar(0.12)
+  (-) Associated with: powders(-0.25), china(-0.25), yb2o3(-0.20), material(-0.17), size(-0.15), particle(-0.15), japan(-0.15), 8ysz(-0.15)
+
+[text_svd_11]
+  (+) Associated with: raw(0.46), ceria(0.30), scandia(0.25), zrocl2(0.20), materials(0.18), size(0.15), particle(0.15), yb2o3(0.15)
+  (-) Associated with: starting(-0.37), powders(-0.24), nm(-0.18), 200(-0.17), bi2o3(-0.13), 99(-0.10), bismuth(-0.09), zro2(-0.08)
+
+[text_svd_12]
+  (+) Associated with: material(0.38), scsz(0.35), prepared(0.26), method(0.25), mixture(0.22), y2o3(0.21), house(0.20), mixed(0.15)
+  (-) Associated with: supplied(-0.23), materials(-0.16), usa(-0.15), sc2o3(-0.15), commercial(-0.12), raw(-0.11), alfa(-0.10), aesar(-0.10)
+
+[text_svd_13]
+  (+) Associated with: raw(0.53), yttria(0.14), materials(0.14), scsz(0.13), nm(0.13), 200(0.12), method(0.12), prepared(0.12)
+  (-) Associated with: mixture(-0.42), ceria(-0.33), scandia(-0.27), zirconia(-0.15), starting(-0.13), ytterbium(-0.11), y2o3(-0.09), size(-0.09)
+
+[text_svd_14]
+  (+) Associated with: y2o3(0.32), mixture(0.25), raw(0.22), supplied(0.21), kyoritsu(0.19), ceramic(0.19), bi2o3(0.17), ytterbium(0.16)
+  (-) Associated with: purity(-0.29), sc2o3(-0.28), obtained(-0.18), scsz(-0.17), tokyo(-0.14), starting(-0.14), japan(-0.14), ysz(-0.12)
+
+[text_svd_15]
+  (+) Associated with: material(0.34), purity(0.18), scsz(0.17), obtained(0.14), raw(0.13), mixture(0.13), high(0.12), sputtering(0.10)
+  (-) Associated with: prepared(-0.31), method(-0.31), house(-0.28), mixed(-0.25), fe2o3(-0.23), coprecipitation(-0.21), supplied(-0.14), china(-0.12)

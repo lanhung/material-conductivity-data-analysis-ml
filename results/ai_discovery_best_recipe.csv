@@ -1,0 +1,2 @@
+system,dopant_1_element,dopant_1_fraction,dopant_2_element,dopant_2_fraction,total_dopant_fraction,effective_cation_radius_pm,sintering_temperature_c,predicted_log_conductivity,predicted_conductivity_S_cm,target_temperature_c
+ZrO2-Sc-Mg,Sc,0.07496119718550831,Mg,0.03188728944025781,0.10684848662576613,87.596869276248,1504.6215462684768,-1.036102533340454,0.09202322868616235,800

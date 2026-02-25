@@ -1,0 +1,6 @@
+sample_id,material_source_and_purity,synthesis_method,temperature_kelvin,log_conductivity,operating_temperature,conductivity,total_dopant_fraction,average_dopant_radius,average_dopant_valence,number_of_dopants,primary_dopant_element,maximum_sintering_temperature,total_sintering_duration,pred_log_sigma,pred_Ea,pred_sigma
+Virtual_Sc_0.16,Virtual Screening Generated Sample High Purity,Solid State Reaction,1073.15,-1.9992833685799605,800,0.0100165146699706,0.16,74.5,3.0,1,Sc,1550,10,-1.2234342,0.9925501,0.05978136
+Virtual_Sc_0.14,Virtual Screening Generated Sample High Purity,Solid State Reaction,1073.15,-1.9992833685799605,800,0.0100165146699706,0.14,74.5,3.0,1,Sc,1550,10,-1.224849,0.992404,0.05958693
+Virtual_Sc_0.12,Virtual Screening Generated Sample High Purity,Solid State Reaction,1073.15,-1.9992833685799605,800,0.0100165146699706,0.12,74.5,3.0,1,Sc,1550,10,-1.2262633,0.9922579,0.059393197
+Virtual_Sc_0.10,Virtual Screening Generated Sample High Purity,Solid State Reaction,1073.15,-1.9992833685799605,800,0.0100165146699706,0.1,74.5,3.0,1,Sc,1550,10,-1.2276771,0.9921116,0.05920016
+Virtual_Sc_0.08,Virtual Screening Generated Sample High Purity,Solid State Reaction,1073.15,-1.9992833685799605,800,0.0100165146699706,0.08,74.5,3.0,1,Sc,1550,10,-1.2289574,0.99201345,0.059025895
