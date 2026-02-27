@@ -10,7 +10,7 @@ DATA_DIR = PROJECT_ROOT / "data"
 ## 01_train_physics_model.py
 BEST_PIML_MODEL_PATH=os.path.join(MODEL_DIR,"piml","best_piml_model.pth")
 PIML_PREDICTION_EA_DISTANCE_IMAGE_PATH=os.path.join(IMAGE_DIR,"piml_prediction_and_ea_dist.png")
-#02_interpret_mechanisms.py,三张图，还有一张paper_lodo_{target_element}需要用到代码中的变量
+# 02_interpret_mechanisms.py: three plots, plus paper_lodo_{target_element} uses a variable from the code.
 LATENT_SPACE_IMAGE_PATH=os.path.join(IMAGE_DIR,"paper_latent_space.png")
 PAPER_FEATURE_IMPORTANCE_EA_IMAGE_PATH=os.path.join(IMAGE_DIR,"paper_feature_importance_Ea.png")
 #03a_train_baseline_model.py
@@ -35,5 +35,4 @@ PAPER_COMPUTATIONAL_VALIDATION_IMAGE_PATH = os.path.join(IMAGE_DIR, "paper_compu
 # 08_verify_stability_dft.py
 PAPER_DFT_FORMATION_ENERGY_IMAGE_PATH = os.path.join(IMAGE_DIR, "paper_dft_formation_energy.png")
 PSEUDO_DIR= os.path.join(DATA_DIR,"pseudo")
-
 

@@ -4,9 +4,9 @@ from torch.utils.data import Dataset
 class ConductivityDataset(Dataset):
     def __init__(self, features, temps, targets):
         """
-        :param features: 预处理后的特征矩阵 (Numpy array or Tensor)
-        :param temps: 温度 (Kelvin)
-        :param targets: 目标值 (Log10 Conductivity)
+        :param features: Preprocessed feature matrix (numpy array or Tensor)
+        :param temps: Temperature (Kelvin)
+        :param targets: Target values (log10 conductivity)
         """
         self.features = torch.FloatTensor(features)
         self.temps = torch.FloatTensor(temps).view(-1, 1)

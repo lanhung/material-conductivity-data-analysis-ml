@@ -15,7 +15,7 @@ from features.preprocessor import build_feature_pipeline
 from custom_datasets.conductivity_dataset import ConductivityDataset
 from models.baseline_net import StandardDNN
 
-# --- 本地参数 ---
+# --- Local parameters ---
 SEED = 42
 BATCH_SIZE = 32
 EPOCHS = 300
@@ -32,28 +32,28 @@ def main():
     set_seed(SEED)
 
     # ==========================================
-    # 1. 目录初始化 提取到了00_init_dir.py
+    # 1. Directory initialization (moved to 00_init_dir.py)
     # ==========================================
 
 
     # ==========================================
-    # 2. 数据加载与处理
+    # 2. Data loading & preprocessing
     # ==========================================
-    # 复用统一的 ETL 逻辑
+    # Reuse the unified ETL logic
     processor = MaterialDataProcessor()
     df = processor.load_and_preprocess_data_for_training_piml()
 
     target_col = 'log_conductivity'
     temperature_col = 'temperature_kelvin'
 
-    # 划分数据集
+    # Split dataset
     train_df, val_df = train_test_split(df, test_size=0.2, random_state=SEED)
 
     # ==========================================
-    # 3. 特征工程
+    # 3. Feature engineering
     # ==========================================
 
-    # A. 材料特征 (X) - 复用 Pipeline
+    # A. Material features (X) - reuse pipeline
     print(">>> Fitting feature pipeline...")
     pipeline = build_feature_pipeline()
     X_train = pipeline.fit_transform(train_df)
@@ -61,15 +61,15 @@ def main():
 
     input_dim = X_train.shape[1]
 
-    # B. 温度特征 (T) - 【Baseline 特有步骤】
-    # 纯神经网络对输入尺度敏感，必须将温度标准化 (Z-Score)
+    # B. Temperature feature (T) - baseline-specific step
+    # Pure DNNs are sensitive to input scale; standardize temperature (z-score).
     print(">>> Scaling temperature for DNN baseline...")
     t_scaler = StandardScaler()
     T_train_scaled = t_scaler.fit_transform(train_df[[temperature_col]].values)
     T_val_scaled = t_scaler.transform(val_df[[temperature_col]].values)
 
-    # C. 构建 Dataset
-    # 尽管 Dataset 变量名是 'temps'，但我们传入的是标准化后的 T_scaled
+    # C. Build Dataset
+    # Although the Dataset field is named 'temps', we pass the standardized T_scaled.
     train_dataset = ConductivityDataset(X_train, T_train_scaled, train_df[target_col].values)
     val_dataset = ConductivityDataset(X_val, T_val_scaled, val_df[target_col].values)
 
@@ -77,14 +77,14 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     # ==========================================
-    # 4. 模型初始化
+    # 4. Model initialization
     # ==========================================
     model = StandardDNN(input_dim).to(DEVICE)
     optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
     criterion = nn.MSELoss()
 
     # ==========================================
-    # 5. 训练循环
+    # 5. Training loop
     # ==========================================
     best_val_loss = float('inf')
 
@@ -117,7 +117,7 @@ def main():
 
         avg_val_loss = val_loss / len(val_loader)
 
-        # 保存最佳模型
+        # Save best model
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
             torch.save(model.state_dict(), path_config.BASELINE_MODEL_PATH)
@@ -128,7 +128,7 @@ def main():
     print(f">>> Best baseline model saved to: {path_config.BASELINE_MODEL_PATH}")
 
     # ==========================================
-    # 6. 评估与可视化
+    # 6. Evaluation & visualization
     # ==========================================
     model.load_state_dict(torch.load(path_config.BASELINE_MODEL_PATH))
     model.eval()
@@ -153,7 +153,7 @@ def main():
     plt.figure(figsize=(6, 6))
     sns.scatterplot(x=target_col, y='predicted_log_sigma', data=val_df, alpha=0.6, color='gray')
 
-    # 辅助线
+    # Reference line
     min_val = min(val_df[target_col].min(), val_df['predicted_log_sigma'].min())
     max_val = max(val_df[target_col].max(), val_df['predicted_log_sigma'].max())
     plt.plot([min_val, max_val], [min_val, max_val], 'r--', label='Perfect Prediction')
@@ -167,7 +167,7 @@ def main():
     plt.savefig(path_config.BASELINE_DNN_RESULT_IMAGE_PATH)
     print(f">>> Result plot saved to {path_config.BASELINE_DNN_RESULT_IMAGE_PATH}")
 
-    # 保存预测结果 CSV (用于论文中与 PIML 进行消融实验对比)
+    # Save prediction CSV (for ablation comparison with PIML in the paper)
     comparison_df = val_df[['sample_id', temperature_col, target_col, 'predicted_log_sigma']].copy()
     comparison_df.rename(columns={'predicted_log_sigma': 'pred_baseline_dnn'}, inplace=True)
     comparison_df.to_csv(path_config.COMPARISON_BASELINE_DNN_CSV, index=False)

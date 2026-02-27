@@ -6,7 +6,7 @@ class StandardDNN(nn.Module):
         super(StandardDNN, self).__init__()
 
         # --- Material Encoder ---
-        # 结构与 PIML 保持一致，确保参数量级相似，进行公平对比
+        # Match the PIML structure to keep parameter scale similar for a fair comparison.
         self.encoder = nn.Sequential(
             nn.Linear(input_dim, 128),
             nn.BatchNorm1d(128),
@@ -22,27 +22,27 @@ class StandardDNN(nn.Module):
         )
 
         # --- Regression Head ---
-        # 输入: 32 (材料隐特征) + 1 (温度特征)
-        # 这是一个纯数据驱动的映射
+        # Input: 32 (material latent features) + 1 (temperature feature)
+        # This is a purely data-driven mapping.
         self.output_head = nn.Sequential(
             nn.Linear(32 + 1, 16),
             nn.ReLU(),
-            nn.Linear(16, 1) # 直接输出 log10(sigma)
+            nn.Linear(16, 1) # Directly output log10(sigma)
         )
 
     def forward(self, x_features, temperature_scaled):
         """
-        :param x_features: 材料特征 (Batch, Input_Dim)
-        :param temperature_scaled: 标准化后的温度 (Batch, 1) -> 必须是 z-score 形式
+        :param x_features: Material features (Batch, Input_Dim)
+        :param temperature_scaled: Standardized temperature (Batch, 1) -> must be z-score
         """
-        # 1. 编码材料
+        # 1. Encode material
         hidden = self.encoder(x_features)
 
-        # 2. 拼接 (Concat) 温度条件
-        # 在纯 DNN 中，物理条件通常被当作另一个特征维拼接
+        # 2. Concatenate temperature condition
+        # In a pure DNN, physical conditions are typically concatenated as another feature dimension.
         combined = torch.cat((hidden, temperature_scaled), dim=1)
 
-        # 3. 预测
+        # 3. Predict
         log_sigma_pred = self.output_head(combined)
 
         return log_sigma_pred

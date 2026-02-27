@@ -13,10 +13,10 @@ from etl.material_data_processor import MaterialDataProcessor
 from features.preprocessor import build_feature_pipeline
 from models.piml_net import PhysicsInformedNet
 
-# 抑制警告
+# Suppress warnings
 warnings.filterwarnings('ignore')
 
-# ================= 1. 配置与参数 =================
+# ================= 1. Config & parameters =================
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SEED = 42
 
@@ -29,13 +29,13 @@ def set_seed(seed):
 set_seed(SEED)
 
 
-# ================= 2. 核心工具：MC Dropout 不确定性预测 =================
+# ================= 2. Core utility: MC Dropout uncertainty prediction =================
 def predict_with_uncertainty(model, X, T_K, n_iter=50):
     """
-    通过在推理阶段保持 Dropout 开启 (Monte Carlo Dropout)，
-    进行多次前向传播来估计预测值的均值 (Mean) 和不确定性 (Std Dev)。
+    Keep Dropout enabled during inference (Monte Carlo Dropout) and run multiple forward passes
+    to estimate the predictive mean and uncertainty (std dev).
     """
-    # 关键：设置模型为 train 模式，确保 Dropout 层是活跃的
+    # Key: set the model to train mode so Dropout layers stay active.
     model.train()
 
     X_t = torch.FloatTensor(X).to(DEVICE)
@@ -44,20 +44,20 @@ def predict_with_uncertainty(model, X, T_K, n_iter=50):
     preds_list = []
     with torch.no_grad():
         for _ in range(n_iter):
-            # forward 返回: log_sigma, Ea, logA
+            # forward returns: log_sigma, Ea, logA
             preds, _, _ = model(X_t, T_t)
             preds_list.append(preds.cpu().numpy())
 
     # Shape: (n_iter, n_samples, 1)
     preds_arr = np.array(preds_list)
 
-    # 计算均值作为最终预测，标准差作为不确定性 (Epistemic Uncertainty)
+    # Use the mean as the final prediction and the standard deviation as uncertainty (epistemic).
     mean_pred = preds_arr.mean(axis=0).flatten()
     std_pred = preds_arr.std(axis=0).flatten()
 
     return mean_pred, std_pred
 
-# ================= 3. 数据准备 =================
+# ================= 3. Data preparation =================
 def get_data_ready():
     print(">>> [Setup] Loading and processing data...")
     processor = MaterialDataProcessor()
@@ -68,21 +68,21 @@ def get_data_ready():
 
     return df, X
 
-# ================= 4. 实验四：不确定性校准 (UQ Calibration) =================
+# ================= 4. Experiment 4: uncertainty calibration (UQ) =================
 def run_uq_experiment(df, X):
     """
-    训练模型并验证其能否正确估计误差范围。
-    理想情况下，预测的不确定性范围 (Error Bars) 应覆盖真实值。
+    Train a model and check whether it can estimate error ranges correctly.
+    Ideally, the predicted uncertainty (error bars) should cover the true values.
     """
     print("\n>>> [Module 1] Running Uncertainty Quantification (UQ)...")
 
-    # 划分数据
+    # Split data
     X_train, X_test, y_train, y_test, T_train, T_test = train_test_split(
         X, df['log_conductivity'].values, df['temperature_kelvin'].values,
         test_size=0.2, random_state=SEED
     )
 
-    # 快速训练一个专用模型 (Ad-hoc training for UQ demo)
+    # Quickly train an ad-hoc model (for UQ demo)
     input_dim = X.shape[1]
     model = PhysicsInformedNet(input_dim).to(DEVICE)
     optimizer = optim.Adam(model.parameters(), lr=0.002)
@@ -93,7 +93,7 @@ def run_uq_experiment(df, X):
     T_tr_t = torch.FloatTensor(T_train).view(-1, 1).to(DEVICE)
 
     print("    Training UQ probe model...")
-    for ep in range(150): # 简单的训练循环
+    for ep in range(150): # simple training loop
         model.train()
         optimizer.zero_grad()
         preds, _, _ = model(X_tr_t, T_tr_t)
@@ -101,19 +101,19 @@ def run_uq_experiment(df, X):
         loss.backward()
         optimizer.step()
 
-    # 使用 MC Dropout 进行预测
+    # Predict with MC Dropout
     mu, sigma = predict_with_uncertainty(model, X_test, T_test, n_iter=100)
 
-    # --- 绘图 ---
+    # --- Plot ---
     plt.figure(figsize=(7, 7))
 
-    # 随机采样 50 个点进行可视化，避免图表过于拥挤
+    # Randomly sample 50 points for visualization to avoid overcrowding.
     if len(y_test) > 50:
         indices = np.random.choice(len(y_test), 50, replace=False)
     else:
         indices = np.arange(len(y_test))
 
-    # 绘制带误差棒的散点 (95% 置信区间 = 1.96 * std)
+    # Draw scatter with error bars (95% CI = 1.96 * std)
     plt.errorbar(
         y_test[indices],
         mu[indices],
@@ -122,7 +122,7 @@ def run_uq_experiment(df, X):
         label='95% Confidence Interval'
     )
 
-    # 绘制理想预测线 (y=x)
+    # Draw ideal prediction line (y=x)
     min_val, max_val = min(y_test), max(y_test)
     plt.plot([min_val, max_val], [min_val, max_val], 'r--', label='Ideal Prediction')
 
@@ -136,42 +136,42 @@ def run_uq_experiment(df, X):
     plt.savefig(save_path)
     print(f"    -> Saved calibration plot to '{save_path}'")
 
-# ================= 5. 实验五：主动学习模拟 (Active Learning) =================
+# ================= 5. Experiment 5: active learning simulation =================
 def run_active_learning_simulation(df, X):
     """
-    模拟“AI 科学家”：对比随机尝试与 AI 引导（主动学习）在发现高性能材料速度上的差异。
+    Simulate an "AI scientist": compare random trials vs AI-guided (active learning) discovery speed for high-performance materials.
     """
     print("\n>>> [Module 2] Running Active Learning Simulation (AI Scientist)...")
 
-    # 模拟设置
+    # Simulation settings
     n_samples = len(df)
-    n_initial = int(n_samples * 0.05) # 初始只有 5% 的数据
-    n_step = 5   # 每一轮实验只做 5 个样品
-    n_rounds = 15 # 进行 15 轮实验
+    n_initial = int(n_samples * 0.05) # start with only 5% of the data
+    n_step = 5   # 5 samples per batch
+    n_rounds = 15 # run 15 rounds
 
-    # 数据索引池
+    # Index pools
     indices = np.random.permutation(n_samples)
     initial_idx = indices[:n_initial]
     pool_idx = indices[n_initial:]
 
-    # 定义策略
-    # 1. Random: 盲目尝试
-    # 2. Greedy (AI-Guided): 利用 (Exploitation)，总是测试模型认为最好的材料
+    # Strategies
+    # 1. Random: blind exploration
+    # 2. Greedy (AI-guided): exploitation; always test what the model thinks is best
     strategies = ['Random', 'Greedy (AI-Guided)']
     results = {s: [] for s in strategies}
 
-    # 内部辅助函数：快速训练并选择样本
+    # Helper: train quickly and select samples
     def train_and_select(train_idx, pool_idx, strategy):
-        # 准备当前训练集
+        # Prepare current training set
         X_tr = X[train_idx]
         y_tr = df.iloc[train_idx]['log_conductivity'].values
         T_tr = df.iloc[train_idx]['temperature_kelvin'].values
 
-        # 准备候选池 (Pool)
+        # Prepare candidate pool
         X_pool = X[pool_idx]
         T_pool = df.iloc[pool_idx]['temperature_kelvin'].values
 
-        # 1. 从头训练一个模型 (模拟真实场景：每次获得新数据都更新模型)
+        # 1. Train a model from scratch (simulate real scenario: update after each new batch)
         model = PhysicsInformedNet(X.shape[1]).to(DEVICE)
         opt = optim.Adam(model.parameters(), lr=0.005)
         loss_fn = nn.MSELoss()
@@ -181,32 +181,32 @@ def run_active_learning_simulation(df, X):
         T_t = torch.FloatTensor(T_tr).view(-1, 1).to(DEVICE)
 
         model.train()
-        for _ in range(60): # 快速训练 60 epochs
+        for _ in range(60): # quick training for 60 epochs
             opt.zero_grad()
             pred, _, _ = model(X_t, T_t)
             loss = loss_fn(pred, y_t)
             loss.backward()
             opt.step()
 
-        # 2. 对候选池进行预测
-        # 使用 MC Dropout 获得均值 (mu) 和 不确定性 (sigma)
-        # 注意：这里我们使用 greedy 策略主要看 mu，如果是 exploration 策略会看 sigma
+        # 2. Predict on candidate pool
+        # Use MC Dropout to get mean (mu) and uncertainty (sigma)
+        # Note: greedy mainly uses mu; an exploration strategy would use sigma.
         mu, sigma = predict_with_uncertainty(model, X_pool, T_pool, n_iter=20)
 
-        # 3. 选择样本
+        # 3. Select samples
         if strategy == 'Random':
             selected_local_idx = np.random.choice(len(pool_idx), n_step, replace=False)
         elif strategy == 'Greedy (AI-Guided)':
-            # 选择预测导电率最高的 Top N
+            # Pick the top-N highest predicted conductivity
             selected_local_idx = np.argsort(mu)[::-1][:n_step]
 
-        # 4. 记录当前发现的“最佳材料” (最大真实导电率)
-        # 模拟：我们在已经实验过的样本 (train_idx) 中找到的最高值是多少？
+        # 4. Track the current "best material" found (max true conductivity)
+        # Simulate: what's the best value among already-tested samples (train_idx)?
         max_found = np.max(y_tr)
 
         return selected_local_idx, max_found
 
-    # 开始循环模拟
+    # Run simulation loop
     for strategy in strategies:
         print(f"    Running strategy: {strategy}...")
         curr_train = initial_idx.copy()
@@ -218,20 +218,20 @@ def run_active_learning_simulation(df, X):
             selected_local, max_val = train_and_select(curr_train, curr_pool, strategy)
             history.append(max_val)
 
-            # 更新池子：将选中的样本从 pool 移到 train
-            # 注意索引映射：selected_local 是相对于 curr_pool 的索引
+            # Update pools: move selected samples from pool to train
+            # Note on index mapping: selected_local is relative to curr_pool
             selected_global = curr_pool[selected_local]
 
             curr_train = np.concatenate([curr_train, selected_global])
             curr_pool = np.delete(curr_pool, selected_local)
 
-            # 简单的进度条
+            # Simple progress indicator
             print(f"      Round {r+1}/{n_rounds} | Best Found: {max_val:.4f}", end='\r')
         print(f"      Strategy {strategy} completed.             ")
 
         results[strategy] = history
 
-    # --- 绘图 ---
+    # --- Plot ---
     plt.figure(figsize=(8, 5))
     for name, hist in results.items():
         plt.plot(range(len(hist)), hist, marker='o', label=name, linewidth=2)
@@ -247,13 +247,13 @@ def run_active_learning_simulation(df, X):
     print(f"    -> Saved active learning plot to '{save_path}'")
 
 if __name__ == "__main__":
-    # 1. 准备数据
+    # 1. Prepare data
     df, X = get_data_ready()
 
-    # 2. 运行不确定性实验
+    # 2. Run uncertainty experiment
     run_uq_experiment(df, X)
 
-    # 3. 运行主动学习模拟
+    # 3. Run active learning simulation
     run_active_learning_simulation(df, X)
 
     print("\n>>> All Lab Application experiments completed.")

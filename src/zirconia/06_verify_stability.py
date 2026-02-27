@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from config import path_config
 
-# 扩展的离子半径库 (Shannon Radii, pm, 8-coord)
+# Extended ionic radii table (Shannon radii, pm, 8-coordination)
 IONIC_RADII = {
     'Zr': 84.0, 'O': 138.0,
     'Sc': 87.0, 'Yb': 98.5, 'Y': 101.9, 'Gd': 105.3,
@@ -13,9 +13,9 @@ IONIC_RADII = {
     'Ce': 97.0, 'Ti': 74.0, 'Al': 54.0
 }
 
-# [基准线] 8 at% Y (阳离子位) 的理论参数
-# 注意: 此处 Zr(0.92)+Y(0.08) 是指阳离子位上 Y 占 8%，
-#       并非材料领域常说的 "8 mol% Y2O3-ZrO2"(后者 Y 阳离子占比约 14.8%)
+# [Baseline] Theoretical parameters for 8 at% Y (on the cation sublattice)
+# Note: Zr(0.92)+Y(0.08) means Y is 8% on the cation sublattice,
+#       not the commonly cited "8 mol% Y2O3-ZrO2" (where Y cations are ~14.8%).
 # Zr(0.92) + Y(0.08)
 YSZ_8_RADIUS = 0.92 * 84.0 + 0.08 * 101.9 # ~ 85.43 pm
 YSZ_8_RATIO  = YSZ_8_RADIUS / 138.0       # ~ 0.619
@@ -49,7 +49,7 @@ def calculate_stability_metrics(candidate):
     print(f"\n>>> [Validation] Checking Thermodynamic Stability...")
     print(f"    (Baseline Reference: 8YSZ Radius={YSZ_8_RADIUS:.2f} pm, Ratio={YSZ_8_RATIO:.4f})")
 
-    # 1. 计算平均阳离子半径
+    # 1. Compute average cation radius
     total_conc = sum([x[1] for x in candidate['dopants']])
     host_conc = 1.0 - total_conc
     r_avg = host_conc * IONIC_RADII[candidate['host_element']]
@@ -58,7 +58,7 @@ def calculate_stability_metrics(candidate):
 
     print(f"    Average Cation Radius: {r_avg:.2f} pm")
 
-    # 2. 阳离子半径失配度 (Radius Mismatch)
+    # 2. Cation radius mismatch (radius mismatch)
     variance = host_conc * (IONIC_RADII[candidate['host_element']] - r_avg)**2
     for el, conc in candidate['dopants']:
         variance += conc * (IONIC_RADII.get(el, 85.0) - r_avg)**2
@@ -66,25 +66,25 @@ def calculate_stability_metrics(candidate):
 
     print(f"    Radius Mismatch (DR):  {radius_mismatch:.4f} pm")
 
-    # 3. 容忍因子判据 (Calibrated for Zirconia)
-    # Zirconia 从不是完美的 Pauling 晶体，我们需要对比 YSZ
+    # 3. Tolerance-factor criterion (calibrated for zirconia)
+    # Zirconia is not an ideal Pauling crystal; compare against YSZ.
     ratio = r_avg / IONIC_RADII['O']
     print(f"    Cation/Anion Ratio:    {ratio:.4f}")
 
-    # --- [关键修改] 判定逻辑细化 ---
-    # 区域 1: 稳定立方 (接近或超过 YSZ)
+    # --- [Key change] Refined decision logic ---
+    # Region 1: Stable cubic (close to or above YSZ)
     if ratio >= 0.615 and radius_mismatch < 6.5:
         status = "STABLE (Cubic Phase)"
         color_code = "\033[1;32m" # Green
         is_stable = True
 
-    # 区域 2: 亚稳态/四方相 (比 YSZ 稍小，但导电率极高，如 ScSZ)
+    # Region 2: Metastable / tetragonal (slightly below YSZ, but very high conductivity, e.g., ScSZ)
     elif ratio >= 0.605:
         status = "METASTABLE (Tetragonal/Cubic Mixed - High Conductivity)"
         color_code = "\033[1;33m" # Yellow
-        is_stable = True # 这种材料在工程上是可用的，甚至更强韧
+        is_stable = True # Engineering-viable, potentially tougher.
 
-    # 区域 3: 不稳定 (太小，单斜相) 或 失配太大
+    # Region 3: Unstable (too small -> monoclinic) or mismatch too large
     else:
         if radius_mismatch >= 6.5:
             status = "UNSTABLE (Phase Separation Risk)"
@@ -114,17 +114,17 @@ def generate_dft_input(candidate, r_avg):
 def plot_stability_map(r_avg, mismatch, is_stable):
     plt.figure(figsize=(8, 6))
 
-    # 绘制区域背景
+    # Draw region background
     plt.fill_between([82, 88], 0, 10, color='red', alpha=0.1, label='Unstable (Monoclinic)')
     plt.fill_between([84.5, 88], 0, 6.5, color='yellow', alpha=0.2, label='Metastable (Tetragonal)')
     plt.fill_between([85.2, 88], 0, 6.0, color='green', alpha=0.2, label='Stable (Cubic)')
 
-    # YSZ 参考点
+    # YSZ reference point
     plt.scatter([YSZ_8_RADIUS], [1.5], c='blue', s=150, marker='s', label='8-YSZ (Reference)')
 
-    # AI 发现点
+    # AI discovery point
     color = 'green' if is_stable else 'red'
-    # [修复] unfilled marker 'x' 不使用 edgecolors
+    # [Fix] Unfilled marker 'x' should not use edgecolors
     if is_stable:
         plt.scatter([r_avg], [mismatch], c='gold', s=300, marker='*', edgecolors='black', label='AI Discovery')
     else:

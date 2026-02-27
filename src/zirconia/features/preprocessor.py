@@ -8,26 +8,26 @@ from sklearn.preprocessing import FunctionTransformer
 
 def build_feature_pipeline():
     """
-    构建 Scikit-Learn 预处理流水线。
-    注意：这里的列名已更新为匹配 MaterialDataProcessor (ETL) 的输出。
+    Build a Scikit-Learn preprocessing pipeline.
+    Note: Column names here have been updated to match the output of MaterialDataProcessor (ETL).
     """
-    # 1. 数值特征 (列名来自 material_data_processor.py)
+    # 1. Numeric features (column names from material_data_processor.py)
     numeric_features = [
         'total_dopant_fraction',
-        'average_dopant_radius',   # 原名为 avg_dopant_radius
-        'average_dopant_valence',  # 原名为 avg_dopant_valence
-        'number_of_dopants',       # 原名为 num_dopants
-        'maximum_sintering_temperature', # 原名为 max_sinter_temp
-        'total_sintering_duration'       # 原名为 total_sinter_time
+        'average_dopant_radius',   # formerly avg_dopant_radius
+        'average_dopant_valence',  # formerly avg_dopant_valence
+        'number_of_dopants',       # formerly num_dopants
+        'maximum_sintering_temperature', # formerly max_sinter_temp
+        'total_sintering_duration'       # formerly total_sinter_time
     ]
 
-    # 2. 分类特征
+    # 2. Categorical features
     categorical_features = [
         'synthesis_method',
-        'primary_dopant_element'   # 原名为 primary_dopant
+        'primary_dopant_element'   # formerly primary_dopant
     ]
 
-    # 3. 文本特征
+    # 3. Text features
     text_feature = ['material_source_and_purity']
 
     preprocessor = ColumnTransformer(

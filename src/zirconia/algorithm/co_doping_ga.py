@@ -5,8 +5,8 @@ import torch
 
 class CoDopingGA:
     """
-    进阶遗传算法：寻找“三元共掺杂”配方（Ternary Co-doping）。
-    [优化] 采用批处理（Batch Processing）模式，避免单样本预测导致的 Pipeline 维度错误。
+    Advanced genetic algorithm: search for a "ternary co-doping" recipe.
+    [Optimization] Use batch processing to avoid pipeline shape issues from single-sample prediction.
     """
 
     def __init__(self, model, pipeline, df_template, target_temp_c=800, device=None):
@@ -14,13 +14,13 @@ class CoDopingGA:
         self.pipeline = pipeline
         self.template = df_template.iloc[0].copy()
 
-        # 保存原始列类型，防止构建 DataFrame 时类型丢失
+        # Preserve original column dtypes to avoid type loss when building a DataFrame.
         self.column_dtypes = df_template.dtypes
 
         self.target_temp_k = target_temp_c + 273.15
         self.device = device if device else torch.device("cpu")
 
-        # 扩展搜索空间
+        # Expanded search space
         self.dopants_db = {
             'Sc': 87.0, 'Yb': 98.5, 'Y': 101.9, 'Gd': 105.3,
             'Sm': 107.9, 'Nd': 110.9, 'Ca': 112.0, 'Mg': 89.0
@@ -30,25 +30,25 @@ class CoDopingGA:
 
     def check_constraints(self, d1, f1, d2, f2):
         """
-        快速检查硬约束
+        Quickly check hard constraints.
         """
         total_frac = f1 + f2
-        # 约束 1: 浓度范围 8% - 20%
+        # Constraint 1: total concentration range 8% - 20%
         if total_frac < 0.08 or total_frac > 0.20:
             return False
-        # 约束 2: 必须是不同元素
+        # Constraint 2: elements must be different
         if d1 == d2:
             return False
         return True
 
     def calculate_population_fitness(self, population):
         """
-        [核心优化] 批处理评估整个种群的适应度
+        [Core optimization] Evaluate fitness for the whole population in batch.
         """
         pop_size = len(population)
-        scores = np.full(pop_size, -20.0) # 默认填充惩罚值
+        scores = np.full(pop_size, -20.0) # default penalty fill
 
-        # 1. 拆解种群基因
+        # 1. Unpack population genes
         # population structure: [[d1, f1, d2, f2, temp], ...]
         d1s = np.array([ind[0] for ind in population])
         f1s = np.array([ind[1] for ind in population])
@@ -56,7 +56,7 @@ class CoDopingGA:
         f2s = np.array([ind[3] for ind in population])
         temps = np.array([ind[4] for ind in population])
 
-        # 2. 筛选有效个体 (满足硬约束的)
+        # 2. Filter valid individuals (satisfying hard constraints)
         valid_indices = []
         for i in range(pop_size):
             if self.check_constraints(d1s[i], f1s[i], d2s[i], f2s[i]):
@@ -65,13 +65,13 @@ class CoDopingGA:
         if not valid_indices:
             return scores.tolist()
 
-        # 3. 仅为有效个体构建 DataFrame (批处理)
-        # 复制模板 N 次
+        # 3. Build a DataFrame only for valid individuals (batch)
+        # Replicate template N times
         df_batch = pd.DataFrame([self.template] * len(valid_indices))
-        # 恢复索引以便赋值
+        # Reset index for assignment
         df_batch.index = range(len(valid_indices))
 
-        # 准备物理特征计算
+        # Prepare physical feature computation
         curr_d1s = d1s[valid_indices]
         curr_f1s = f1s[valid_indices]
         curr_d2s = d2s[valid_indices]
@@ -80,7 +80,7 @@ class CoDopingGA:
 
         total_fracs = curr_f1s + curr_f2s
 
-        # 向量化计算半径和价态
+        # Vectorized computation of radii and valences
         r1s = np.array([self.dopants_db[d] for d in curr_d1s])
         r2s = np.array([self.dopants_db[d] for d in curr_d2s])
         v1s = np.array([self.valence_db[d] for d in curr_d1s])
@@ -89,36 +89,36 @@ class CoDopingGA:
         avg_radii = (r1s * curr_f1s + r2s * curr_f2s) / total_fracs
         avg_valences = (v1s * curr_f1s + v2s * curr_f2s) / total_fracs
 
-        # 批量赋值 (Vectorized Assignment)
+        # Batch assignment (vectorized)
         df_batch['total_dopant_fraction'] = total_fracs
         df_batch['average_dopant_radius'] = avg_radii
         df_batch['average_dopant_valence'] = avg_valences
         df_batch['number_of_dopants'] = 2
         df_batch['maximum_sintering_temperature'] = curr_temps
 
-        # 设置主要掺杂元素 (浓度高的那个)
+        # Set primary dopant element (the one with higher fraction)
         # np.where(condition, x, y)
         primary_dopants = np.where(curr_f1s >= curr_f2s, curr_d1s, curr_d2s)
         df_batch['primary_dopant_element'] = primary_dopants
 
-        # 构造 ID 和 固定文本
+        # Build IDs and fixed text fields
         df_batch['sample_id'] = [f"Batch_{i}" for i in range(len(valid_indices))]
         df_batch['material_source_and_purity'] = "AI Discovery Co-Doping"
         df_batch['synthesis_method'] = 'Solid State Reaction'
 
-        # 恢复数据类型 (关键!)
+        # Restore dtypes (important!)
         try:
             df_batch = df_batch.astype(self.column_dtypes)
         except:
-            pass # 尽力而为，Pipeline 通常能处理
+            pass # Best effort; the pipeline can usually handle it.
 
-        # 4. 批量预测
+        # 4. Batch prediction
         try:
-            # 这里的 df_batch 只要行数 > 1，Pipeline 中的 squeeze() 就安全了
+            # As long as df_batch has >1 row, squeeze() inside the pipeline is safe.
             X_vec = self.pipeline.transform(df_batch)
 
             X_tensor = torch.FloatTensor(X_vec).to(self.device)
-            # 温度 Tensor: shape (N, 1)
+            # Temperature tensor: shape (N, 1)
             T_vals = self.target_temp_k
             T_tensor = torch.FloatTensor([[T_vals]] * len(valid_indices)).to(self.device)
 
@@ -126,17 +126,17 @@ class CoDopingGA:
                 preds, _, _ = self.model(X_tensor, T_tensor)
                 preds = preds.cpu().numpy().flatten()
 
-            # 将分数填回对应的索引
+            # Write scores back to the corresponding indices
             scores[valid_indices] = preds
 
         except Exception as e:
             print(f"!!! Batch Prediction Error: {e}")
-            # 发生错误时，这些个体得分为 -20
+            # On error, these individuals keep the penalty score (-20).
 
         return scores.tolist()
 
     def run(self, generations=25, population_size=60):
-        # 确保 population_size 至少为 2，否则 pipeline 还是会崩
+        # Ensure population_size >= 2, otherwise the pipeline can still break.
         if population_size < 2: population_size = 2
 
         print(f"\n>>> [Inverse Design] Starting Co-Doping Evolution (Target: {self.target_temp_k - 273.15:.0f}°C)...")
@@ -144,7 +144,7 @@ class CoDopingGA:
 
         dopant_keys = list(self.dopants_db.keys())
 
-        # 初始化种群
+        # Initialize population
         population = []
         for _ in range(population_size):
             d1 = random.choice(dopant_keys)
@@ -160,10 +160,10 @@ class CoDopingGA:
         best_score = -999
 
         for gen in range(generations):
-            # [修改] 使用批量评估替代列表推导式
+            # [Change] Use batch evaluation instead of list comprehension
             scores = self.calculate_population_fitness(population)
 
-            # 记录最佳
+            # Track best
             max_idx = np.argmax(scores)
             if scores[max_idx] > best_score:
                 best_score = scores[max_idx]
@@ -176,14 +176,14 @@ class CoDopingGA:
                 total = f1 + f2
                 print(f"    Gen {gen}: Best = {best_score:.3f} | {d1}({f1/total:.1%}) + {d2}({f2/total:.1%}) | Total: {total:.1%}")
 
-            # 选择 (Tournament)
+            # Selection (tournament)
             survivors = []
             for _ in range(int(population_size * 0.4)):
                 i1, i2 = random.sample(range(population_size), 2)
                 winner = population[i1] if scores[i1] > scores[i2] else population[i2]
                 survivors.append(winner)
 
-            # 交叉 & 变异
+            # Crossover & mutation
             new_pop = survivors[:]
             while len(new_pop) < population_size:
                 p1 = random.choice(survivors)

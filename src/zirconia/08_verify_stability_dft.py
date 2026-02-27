@@ -4,11 +4,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-# --- 引入 Pymatgen ---
+# --- Import Pymatgen ---
 from pymatgen.core import Structure, Lattice
 from pymatgen.io.pwscf import PWInput
 
-# --- 引入配置 ---
+# --- Import configuration ---
 try:
     from config import path_config
 except ImportError:
@@ -16,14 +16,14 @@ except ImportError:
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from config import path_config
 
-# --- 配置区域 ---
+# --- Configuration ---
 QE_COMMAND = "pw.x"
 #PSEUDO_DIR = "/home/zxc/projects/2/data-analysis-ml/data/pseudo"
 RESULTS_DIR = path_config.RESULTS_DIR
 DFT_WORK_DIR = os.path.join(RESULTS_DIR, "dft_qe_workdir")
 DFT_IMAGE_PATH = os.path.join(path_config.PAPER_DFT_FORMATION_ENERGY_IMAGE_PATH)
 
-# 确保目录存在
+# Ensure directories exist
 os.makedirs(DFT_WORK_DIR, exist_ok=True)
 os.makedirs(path_config.PSEUDO_DIR, exist_ok=True)
 
@@ -33,36 +33,36 @@ class DFTValidator:
 
     def build_structure_pymatgen(self, d1, f1, d2, f2):
         """
-        [一致性核心] 使用与 Step 7 相同的 Pymatgen 逻辑构建结构
+        [Consistency core] Build the structure using the same Pymatgen logic as Step 7.
         """
-        # 1. 基础晶胞 ZrO2 (Cubic Fm-3m)
+        # 1. Base cell: ZrO2 (cubic Fm-3m)
         a0 = 5.12
-        # 为了 DFT 效率，使用最小超胞 (2x1x1, 24原子) 进行演示
-        # 实际论文中通常用 2x2x2 (96原子)
+        # For DFT efficiency, demonstrate with a minimal supercell (2x1x1, 24 atoms).
+        # In a real paper you would typically use 2x2x2 (96 atoms).
         structure = Structure.from_spacegroup("Fm-3m", Lattice.cubic(a0), ["Zr", "O"], [[0,0,0], [0.25,0.25,0.25]])
         structure.make_supercell([2, 1, 1])
 
-        # 2. 阳离子掺杂
+        # 2. Cation doping
         zr_sites = [i for i, s in enumerate(structure) if s.specie.symbol == "Zr"]
         n_d1 = int(round(len(zr_sites) * f1))
         n_d2 = int(round(len(zr_sites) * f2))
 
-        # 随机替换
+        # Random substitution
         replace_indices = np.random.choice(zr_sites, n_d1 + n_d2, replace=False)
         for i, idx in enumerate(replace_indices):
             element = d1 if i < n_d1 else d2
             structure.replace(idx, element)
 
-        # 3. 电荷平衡 (氧空位)
-        # 价态表 (Zr=+4 reference)，与 Step 7 保持一致
+        # 3. Charge balance (oxygen vacancies)
+        # Valence table (Zr=+4 reference), consistent with Step 7.
         valences = {
             "Sc": 3, "Y": 3, "Gd": 3, "Yb": 3,  # +3 Trivalent
             "Mg": 2, "Ca": 2,                     # +2 Divalent
             "Zr": 4
         }
-        v1 = valences.get(d1, 3)  # 默认为 +3
-        v2 = valences.get(d2, 3)  # 默认为 +3
-        # 电荷补偿公式: 每个氧空位补偿 +2 电荷缺陷
+        v1 = valences.get(d1, 3)  # default to +3
+        v2 = valences.get(d2, 3)  # default to +3
+        # Charge compensation: each oxygen vacancy compensates +2 charge deficit.
         # Deficit = Sum( N_dopant * (4 - Valence) )
         charge_deficit = n_d1 * (4 - v1) + n_d2 * (4 - v2)
         n_vacancies = int(round(charge_deficit / 2.0))
@@ -77,11 +77,11 @@ class DFTValidator:
 
     def generate_qe_input(self, structure, label):
         """
-        生成标准 Quantum Espresso 输入文件 (pw.in)
+        Generate a standard Quantum Espresso input file (pw.in).
         """
         filename = os.path.join(DFT_WORK_DIR, f"{label}.pw.in")
 
-        # 伪势定义
+        # Pseudopotential definitions
         pseudo_map = {
             'Zr': 'Zr.pbe-n-kjpaw_psl.1.0.0.UPF',
             'O':  'O.pbe-n-kjpaw_psl.1.0.0.UPF',
@@ -92,7 +92,7 @@ class DFTValidator:
             'Mg': 'Mg.pbe-n-kjpaw_psl.1.0.0.UPF'
         }
 
-        # 手动构建 control block (Pymatgen 的 PWInput 有时过于复杂，手写模板更可控)
+        # Manually build the control block (pymatgen's PWInput can be overly complex; a hand-written template is more controllable).
         unique_elements = sorted([e.symbol for e in structure.composition.elements])
 
         with open(filename, 'w') as f:
@@ -122,15 +122,15 @@ class DFTValidator:
 
     def calculate_formation_energy_mock(self, label):
         """
-        模拟形成能计算结果 (用于演示)
+        Mock formation energy results (for demonstration).
         """
         if "AI_Best" in label:
-            # 熵稳定效应 -> 负形成能 (稳定)
+            # Entropy stabilization -> negative formation energy (stable)
             return -0.15 + np.random.normal(0, 0.02)
         elif "Baseline" in label:
             return 0.0
         elif "Unstable" in label:
-            # 晶格畸变 -> 正形成能 (不稳定)
+            # Lattice distortion -> positive formation energy (unstable)
             return 0.12 + np.random.normal(0, 0.05)
         return 0.0
 
@@ -138,7 +138,7 @@ class DFTValidator:
         print(f">>> [Step 8] DFT Stability Verification...")
         print(f"    Work Dir: {DFT_WORK_DIR}")
 
-        # 1. 读取 AI 结果
+        # 1. Read AI results
         csv_path = path_config.AI_DISCOVERY_RESULTS_CSV
         if os.path.exists(csv_path):
             df = pd.read_csv(csv_path)
@@ -154,16 +154,16 @@ class DFTValidator:
         results = []
         for label, d1, f1, d2, f2 in experiments:
             print(f"   -> Processing: {label}...")
-            # Pymatgen 建模
+            # Pymatgen modeling
             struct = self.build_structure_pymatgen(d1, f1, d2, f2)
-            # 生成输入
+            # Generate input
             self.generate_qe_input(struct, label)
-            # 模拟计算
+            # Mock calculation
             e_form = self.calculate_formation_energy_mock(label)
             results.append({"System": label, "E_form": e_form})
             print(f"      Formation Energy: {e_form:.3f} eV/atom")
 
-        # 绘图
+        # Plot
         df_res = pd.DataFrame(results)
         plt.figure(figsize=(8, 5))
         colors = ['#2E7D32' if x < 0 else '#C62828' for x in df_res['E_form']]

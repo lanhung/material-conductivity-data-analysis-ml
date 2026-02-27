@@ -46,7 +46,7 @@ def inspect_text_components():
 
     feature_names = tfidf.get_feature_names_out()
 
-    # 输出保存路径
+    # Output path
     output_path = os.path.join(path_config.RESULTS_DIR, "text_svd_interpretation.txt")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
@@ -75,7 +75,7 @@ def inspect_text_components():
         if neg_words:
             lines.append(f"  (-) Associated with: {', '.join(neg_words)}")
 
-    # 同时输出到控制台和文件
+    # Output to both console and file
     output_text = "\n".join(lines)
     print(output_text)
 
@@ -85,4 +85,3 @@ def inspect_text_components():
 
 if __name__ == "__main__":
     inspect_text_components()
-

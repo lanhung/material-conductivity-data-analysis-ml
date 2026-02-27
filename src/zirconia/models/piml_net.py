@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-# 物理常数
+# Physical constants
 KB_EV = 8.617333262e-5  # Boltzmann constant in eV/K
 
 class PhysicsInformedNet(nn.Module):

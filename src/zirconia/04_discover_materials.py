@@ -9,20 +9,20 @@ import random
 import warnings
 import sys
 
-# 引入配置
+# Import configuration
 from config import path_config
 from etl.material_data_processor import MaterialDataProcessor
 from features.preprocessor import build_feature_pipeline
 from models.piml_net import PhysicsInformedNet
 
-# 导入 GA 模块
+# Import GA module
 from algorithm.co_doping_ga import CoDopingGA
 
-# 抑制警告
+# Suppress warnings
 warnings.filterwarnings('ignore')
 
-# ================= 1. 配置与初始化 =================
-DEVICE = torch.device("cpu") # 推理建议使用 CPU
+# ================= 1. Configuration & initialization =================
+DEVICE = torch.device("cpu") # CPU is recommended for inference
 SEED = 42
 
 def set_seed(seed):
@@ -32,19 +32,19 @@ def set_seed(seed):
 
 set_seed(SEED)
 
-# ================= 2. 准备数据与 Pipeline =================
+# ================= 2. Prepare data & pipeline =================
 def get_fitted_pipeline_and_data():
     print(">>> [Setup] Loading and fitting pipeline...")
     processor = MaterialDataProcessor()
     df = processor.load_and_preprocess_data_for_training_piml()
 
     pipeline = build_feature_pipeline()
-    # 必须在全量数据上 fit
+    # Must fit on the full dataset
     X_full = pipeline.fit_transform(df)
 
     return pipeline, df, X_full
 
-# ================= 3. 模块：理论验证 (Strain Theory) =================
+# ================= 3. Module: theory validation (Strain Theory) =================
 def verify_strain_theory(model, df, X):
     print("\n>>> [Theory Check] Verifying Elastic Strain Theory...")
     X_tensor = torch.FloatTensor(X).to(DEVICE)
@@ -87,7 +87,7 @@ def verify_strain_theory(model, df, X):
     plt.savefig(path_config.PAPER_STRAIN_THEORY_VERIFICATION_IMAGE_PATH)
     print(f"    -> Saved theory plot to {path_config.PAPER_STRAIN_THEORY_VERIFICATION_IMAGE_PATH}")
 
-# ================= 主程序 =================
+# ================= Main =================
 if __name__ == "__main__":
     # 1. Load Data
     pipeline, df, X = get_fitted_pipeline_and_data()
@@ -101,12 +101,12 @@ if __name__ == "__main__":
         print("Model not found.")
         sys.exit(1)
 
-    # 3. 运行共掺杂逆向设计
-    # 实例化时传入 DEVICE
+    # 3. Run co-doping inverse design
+    # Pass DEVICE when instantiating
     ga = CoDopingGA(model, pipeline, df, device=DEVICE)
     best_ind, best_score, history = ga.run()
 
-    # 解析结果
+    # Parse results
     d1, f1, d2, f2, t = best_ind
     total_f = f1 + f2
     avg_r = (ga.dopants_db[d1]*f1 + ga.dopants_db[d2]*f2)/total_f
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     print("more effectively than single dopants (Entropy Stabilization Effect).")
 
     # -------------------------------------------------------------
-    # [新增] 将最佳结果保存为 CSV
+    # [New] Save the best result to CSV
     # -------------------------------------------------------------
     result_record = {
         'system': f"ZrO2-{d1}-{d2}",

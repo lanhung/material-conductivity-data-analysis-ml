@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from torch.utils.data import DataLoader
 
-# --- 1. 模块化导入 ---
+# --- 1. Modular imports ---
 from etl.material_data_processor import MaterialDataProcessor
 from features.preprocessor import build_feature_pipeline
 from custom_datasets.conductivity_dataset import ConductivityDataset
@@ -34,19 +34,19 @@ def main():
     set_seed(SEED)
 
     # ==========================================
-    # 1. 目录初始化，提取到了00_init_dir.py
+    # 1. Directory initialization (moved to 00_init_dir.py)
     # ==========================================
 
 
     print(f">>> [Setup] Output directories ensure created at: {path_config.RESULTS_DIR}")
 
     # ==========================================
-    # 2. 数据处理与加载
+    # 2. Data preprocessing & loading
     # ==========================================
     processor = MaterialDataProcessor()
     df = processor.load_and_preprocess_data_for_training_piml()
 
-    # 简单的列名映射
+    # Simple column name mapping
     target_col = 'log_conductivity'
     temperature_col = 'temperature_kelvin'
 
@@ -65,7 +65,7 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     # ==========================================
-    # 3. 训练流程
+    # 3. Training loop
     # ==========================================
     model = PhysicsInformedNet(input_dim).to(DEVICE)
     optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
@@ -101,7 +101,7 @@ def main():
 
         avg_val_loss = val_loss / len(val_loader)
 
-        # --- 保存模型 (使用配置路径) ---
+        # --- Save model (using configured path) ---
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
             torch.save(model.state_dict(), path_config.BEST_PIML_MODEL_PATH)
@@ -112,9 +112,9 @@ def main():
     print(f">>> Best model saved to: {path_config.BEST_PIML_MODEL_PATH}")
 
     # ==========================================
-    # 4. 评估与绘图
+    # 4. Evaluation & plotting
     # ==========================================
-    # 加载模型 (使用配置路径)
+    # Load model (using configured path)
     model.load_state_dict(torch.load(path_config.BEST_PIML_MODEL_PATH))
     model.eval()
 
@@ -128,7 +128,7 @@ def main():
     val_df['predicted_log_sigma'] = preds.cpu().numpy()
     val_df['predicted_Ea'] = Ea_pred.cpu().numpy()
 
-    # 绘图
+    # Plot
     plt.figure(figsize=(12, 5))
 
     plt.subplot(1, 2, 1)
@@ -144,7 +144,7 @@ def main():
 
     plt.tight_layout()
 
-    # --- 保存图片 (使用配置路径) ---
+    # --- Save figure (using configured path) ---
     plt.savefig(path_config.PIML_PREDICTION_EA_DISTANCE_IMAGE_PATH)
     print(f">>> Results image saved to: {path_config.PIML_PREDICTION_EA_DISTANCE_IMAGE_PATH}")
 
