@@ -33,12 +33,15 @@ try:
     HAS_MD_PACKAGES = True
 except ImportError:
     HAS_MD_PACKAGES = False
-    print("⚠️ 警告: 未检测到 CHGNet/Pymatgen/ASE 依赖。")
+    print("⚠️ Warning: CHGNet/Pymatgen/ASE dependencies not detected.")
 
 # Whether to allow demo mode (generate synthetic data). Disabled by default to avoid misuse.
 DEMO_MODE = os.environ.get("DEMO_MODE", "0").strip().lower() in {"1", "true", "yes", "y"}
 if not HAS_MD_PACKAGES and not DEMO_MODE:
-    raise SystemExit("未检测到 CHGNet/Pymatgen/ASE 依赖。请安装 requirements，或显式设置 DEMO_MODE=1 运行演示模式。")
+    raise SystemExit(
+        "CHGNet/Pymatgen/ASE dependencies not detected. Install the required packages, "
+        "or explicitly set DEMO_MODE=1 to run in demo mode."
+    )
 
 # --- Configuration ---
 AI_RESULTS_CSV = path_config.AI_DISCOVERY_RESULTS_CSV
@@ -91,10 +94,10 @@ class MDValidator:
         if not demo_mode and HAS_MD_PACKAGES:
             # Force CUDA if available
             if torch.cuda.is_available():
-                print("🚀 加载 CHGNet (GPU Mode)...")
+                print("🚀 Loading CHGNet (GPU Mode)...")
                 self.chgnet = CHGNet.load()
             else:
-                print("⚠️ 加载 CHGNet (CPU Mode) - 速度较慢...")
+                print("⚠️ Loading CHGNet (CPU Mode) - slower...")
                 self.chgnet = CHGNet.load()
 
     def build_supercell(self, d1, f1, d2, f2, rng=None):
@@ -325,7 +328,7 @@ def main():
     try:
         base_seed = int(base_seed_str)
     except ValueError:
-        print(f"⚠️  警告: 无法解析 MD_SEED='{base_seed_str}'，将回退为 42。")
+        print(f"⚠️ Warning: Could not parse MD_SEED='{base_seed_str}', falling back to 42.")
         base_seed = 42
     print(f"    Random Seed (base): {base_seed} (env: MD_SEED)")
 
@@ -403,7 +406,7 @@ def main():
 
     plt.tight_layout()
     plt.savefig(VALIDATION_PLOT_PATH, dpi=300)
-    print(f"\n✅ 验证图表已生成: {VALIDATION_PLOT_PATH}")
+    print(f"\n✅ Validation plot generated: {VALIDATION_PLOT_PATH}")
 
 if __name__ == "__main__":
     main()
